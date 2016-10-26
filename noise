@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+
+require 'securerandom'
+
+loop do
+
+  noise = []
+  (1 + rand(5)).times do
+    stream = (rand(5) == 0) ? $stderr : $stdout
+    noise.push [stream, SecureRandom.base64(rand(60) + 30) + "\n"]
+  end
+
+  noise.each do |stream, ln|
+    stream.write(ln)
+  end
+
+  noise.map{ |(stream,_)| stream }.uniq.each(&:flush)
+
+  (0.3..rand(5)).step(0.1) do
+    Kernel.sleep(0.1)
+  end
+end
