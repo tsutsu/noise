@@ -1,13 +1,24 @@
 #!/usr/bin/env ruby
 
 require 'securerandom'
+require 'json'
 
 loop do
 
   noise = []
-  (1 + rand(5)).times do
+  (1 + rand(2)).times do
     stream = (rand(5) == 0) ? $stderr : $stdout
-    noise.push [stream, SecureRandom.base64(rand(60) + 30) + "\n"]
+
+    msg = if (rand(2) == 0)
+      {
+        "metadata" => {"a" => SecureRandom.base64(10), "c" => SecureRandom.base64(30)},
+        "lines" => (1..rand(4)).map{ SecureRandom.base64(rand(60) + 30) + "\n" }
+      }.to_json + "\n"
+    else
+      SecureRandom.base64(rand(60) + 30) + "\n"
+    end
+
+    noise.push [stream, msg]
   end
 
   noise.each do |stream, ln|
